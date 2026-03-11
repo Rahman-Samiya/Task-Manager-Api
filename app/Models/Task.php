@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Task extends Model
 {
@@ -21,6 +22,7 @@ class Task extends Model
         'description',
         'priority',
         'is_completed',
+        'status',
         'deadline',
     ];
 
@@ -47,5 +49,25 @@ class Task extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the shares of this task.
+     *
+     * @return HasMany
+     */
+    public function shares(): HasMany
+    {
+        return $this->hasMany(TaskShare::class);
+    }
+
+    /**
+     * Get the share links of this task.
+     *
+     * @return HasMany
+     */
+    public function shareLinks(): HasMany
+    {
+        return $this->hasMany(TaskShareLink::class);
     }
 }

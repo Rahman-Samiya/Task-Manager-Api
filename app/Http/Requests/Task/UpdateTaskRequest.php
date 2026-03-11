@@ -25,6 +25,7 @@ class UpdateTaskRequest extends FormRequest
             'title' => ['sometimes', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'priority' => ['nullable', 'in:low,medium,high'],
+            'status' => ['sometimes', 'in:todo,in_progress,in_review,done'],
             'is_completed' => ['nullable', 'boolean'],
             'deadline' => ['nullable', 'date', 'after:today'],
         ];
@@ -40,6 +41,7 @@ class UpdateTaskRequest extends FormRequest
         return [
             'title.max' => 'Title must not exceed 255 characters',
             'priority.in' => 'Priority must be one of: low, medium, high',
+            'status.in' => 'Status must be one of: todo, in_progress, in_review, done',
             'deadline.date' => 'Deadline must be a valid date',
             'deadline.after' => 'Deadline must be a future date',
         ];

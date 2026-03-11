@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use App\Traits\ApiResponse;
@@ -116,6 +118,58 @@ class AuthController extends Controller
             return $this->successResponse(
                 new UserResource($user),
                 'User details retrieved successfully',
+                200
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+        }
+    }
+
+    /**
+     * Request password reset token.
+     *
+     * @param ForgotPasswordRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function forgotPassword(ForgotPasswordRequest $request)
+    {
+        try {
+            $this->authService->sendPasswordResetToken($request->validated()['email']);
+
+            return $this->successResponse(
+                null,
+                'Password reset link sent to your email',
+                200
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+        }
+    }
+
+    /**
+     * Reset password with token.
+     *
+     * @param ResetPasswordRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        try {
+            $validated = $request->validated();
+            
+            $success = $this->authService->resetPassword(
+                $validated['email'],
+                $validated['token'],
+                $validated['password']
+            );
+
+            if (!$success) {
+                return $this->errorResponse('Invalid or expired reset token', 400);
+            }
+
+            return $this->successResponse(
+                null,
+                'Password reset successfully. Please login with your new password',
                 200
             );
         } catch (\Exception $e) {
